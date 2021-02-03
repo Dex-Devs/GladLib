@@ -3,7 +3,10 @@ package com.example.myapp.java;
 import edu.duke.*;
 import java.util.*;
 
+// TO-DO : MAKE THIS A HASHMAP VERSION
 public class GladLib {
+        
+        // replace with HashMap<String for label, ArrayList<String> for list of labels>
 	private ArrayList<String> adjectiveList;
 	private ArrayList<String> nounList;
 	private ArrayList<String> colorList;
@@ -14,16 +17,20 @@ public class GladLib {
 	private ArrayList<String> fruitList;
 	private ArrayList<String> verbList;
         private ArrayList<String> wordsOccured;
-	
+	//
+        
+        // add HashMap<String, String> for label and resource directory
 	private Random myRandom;
 	
 	private static String dataSourceURL = "http://dukelearntoprogram.com/course3/data";
-	private static String dataSourceDirectory = "com/example/myapp/data";
+	private static String dataSourceDirectory = "com/example/myapp/data"; // remove
 	
+        // MODIFY
 	public GladLib(){
 		initializeFromSource(dataSourceDirectory);
 		myRandom = new Random();
                 wordsOccured = new ArrayList<>();
+                
 	}
 	
 	public GladLib(String source){
@@ -32,6 +39,8 @@ public class GladLib {
 	}
 	
 	private void initializeFromSource(String source) {
+            
+        // MODIFY
 		adjectiveList= readIt(source+"/adjective.txt");	
 		nounList = readIt(source+"/noun.txt");
 		colorList = readIt(source+"/color.txt");
@@ -83,7 +92,7 @@ public class GladLib {
 		return "**UNKNOWN**";
 	}
 	
-	private String processWord(String w){
+	public String processWord(String w){
                 
 		int first = w.indexOf("<");
 		int last = w.indexOf(">",first);
@@ -102,6 +111,14 @@ public class GladLib {
                 
                 wordsOccured.add(sub); // add words not yet on word occured list
                
+//                while(true) {
+//                               
+//                if ( !wordsOccured.contains(sub)) { // FALSE - > TRUE -> add to list
+//                    wordsOccured.add(sub);
+//                    break;
+//                } 
+//                    sub = getSubstitute(category); // existing, select other
+//                }
 		return prefix+sub+suffix;
 	}
         
@@ -169,12 +186,14 @@ public class GladLib {
         public static void main(String [] args) {
             GladLib glad = new GladLib();
             glad.makeStory();
+          
             
             System.out.println("ALL WORDS");
             for(String words : glad.getOccurences()){
                 System.out.println((glad.getOccurences().indexOf(words)+1) + " " + words);
             }
              
+            
         }
 
 }
