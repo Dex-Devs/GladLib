@@ -217,10 +217,10 @@ public class GladLib {
         public int totalWordsConsidered() { 
                 int total = 0;
                 
-                for(String word : myMap.keySet()) { 
-                    for(String category : categoriesUsed) {
-                        if(category.equals(word)){
-                           total += myMap.get(word).size();
+                for(String category : myMap.keySet()) { 
+                    for(String labels : categoriesUsed) {
+                        if(category.equals(category)){
+                           total += myMap.get(category).size();
                         }
                     } 
                 }
