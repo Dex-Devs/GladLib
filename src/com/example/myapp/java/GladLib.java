@@ -3,33 +3,36 @@ package com.example.myapp.java;
 import edu.duke.*;
 import java.util.*;
 
-// TO-DO : MAKE THIS A HASHMAP VERSION
 public class GladLib {
         
-        // replace with HashMap<String for label, ArrayList<String> for list of labels>
-	private ArrayList<String> adjectiveList;
-	private ArrayList<String> nounList;
-	private ArrayList<String> colorList;
-	private ArrayList<String> countryList;
-	private ArrayList<String> nameList;
-	private ArrayList<String> animalList;
-	private ArrayList<String> timeList;
-	private ArrayList<String> fruitList;
-	private ArrayList<String> verbList;
-        private ArrayList<String> wordsOccured;
-	//
+    
+        // UNREFACTORED STATE
+//        private ArrayList<String> adjectiveList;
+//	private ArrayList<String> nounList;
+//	private ArrayList<String> colorList;
+//	private ArrayList<String> countryList;
+//	private ArrayList<String> nameList;
+//	private ArrayList<String> animalList;
+//	private ArrayList<String> timeList;
+//	private ArrayList<String> fruitList;
+//	private ArrayList<String> verbList;
         
-        // add HashMap<String, String> for label and resource directory
+        // REFACTORED STATE
+        private HashMap<String, ArrayList<String>> myMap;
+        private ArrayList<String> wordsOccured;
+        private ArrayList<String> categoriesUsed; 
+	
 	private Random myRandom;
 	
 	private static String dataSourceURL = "http://dukelearntoprogram.com/course3/data";
-	private static String dataSourceDirectory = "com/example/myapp/data"; // remove
+	private static String dataSourceDirectory = "com/example/myapp/data";
 	
-        // MODIFY
 	public GladLib(){
-		initializeFromSource(dataSourceDirectory);
+                myMap = new HashMap<>();
 		myRandom = new Random();
                 wordsOccured = new ArrayList<>();
+                categoriesUsed = new ArrayList<>();
+                initializeFromSource(dataSourceDirectory);
                 
 	}
 	
@@ -39,57 +42,88 @@ public class GladLib {
 	}
 	
 	private void initializeFromSource(String source) {
-            
-        // MODIFY
-		adjectiveList= readIt(source+"/adjective.txt");	
-		nounList = readIt(source+"/noun.txt");
-		colorList = readIt(source+"/color.txt");
-		countryList = readIt(source+"/country.txt");
-		nameList = readIt(source+"/name.txt");		
-		animalList = readIt(source+"/animal.txt");
-		timeList = readIt(source+"/timeframe.txt");
-                fruitList = readIt(source+"/fruit.txt");
-                verbList = readIt(source+"/verb.txt");
+                String [] categories = {"adjective", "animal", "color", "country",
+                                        "name", "timeframe", "verb" , "noun", "fruit"
+                                       };
+                
+//                // UNREFACTORED STATE
+//                adjectiveList= readIt(source+"/adjective.txt");	
+//		nounList = readIt(source+"/noun.txt");
+//		colorList = readIt(source+"/color.txt");
+//		countryList = readIt(source+"/country.txt");
+//		nameList = readIt(source+"/name.txt");		
+//		animalList = readIt(source+"/animal.txt");
+//		timeList = readIt(source+"/timeframe.txt");
+//                fruitList = readIt(source+"/fruit.txt");
+//                verbList = readIt(source+"/verb.txt");
+
+                // REFACTORED STATE
+                for(int i = 0 ; i < categories.length ; i++) { 
+                    ArrayList<String> listOfWords = readIt(source+ "/" + categories[i] + ".txt");
+                    myMap.put(categories[i], listOfWords );
+                }
+		
 	}
 	
 	private String randomFrom(ArrayList<String> source){
 		int index = myRandom.nextInt(source.size());
-		return source.get(index);
+                return source.get(index);
+              
 	}
 	
-	private String getSubstitute(String label) {
-		if (label.equals("country")) {
-			return randomFrom(countryList);
-		}
-		if (label.equals("color")){
-			return randomFrom(colorList);
-		}
-		if (label.equals("noun")){
-			return randomFrom(nounList);
-		}
-		if (label.equals("name")){
-			return randomFrom(nameList);
-		}
-		if (label.equals("adjective")){
-			return randomFrom(adjectiveList);
-		}
-		if (label.equals("animal")){
-			return randomFrom(animalList);
-		}
-		if (label.equals("timeframe")){
-			return randomFrom(timeList);
-		}
-		if (label.equals("verb")){
-			return randomFrom(verbList);
-		}
-		if (label.equals("fruit")){
-			return randomFrom(fruitList);
-		}
-		if (label.equals("number")){
+	private String getSubstitute(String category) {
+            
+            // UNREFACTORED STATE
+//		if (label.equals("country")) {
+//			return randomFrom(countryList);
+//		}
+//		if (label.equals("color")){
+//			return randomFrom(colorList);
+//		}
+//		if (label.equals("noun")){
+//			return randomFrom(nounList);
+//		}
+//		if (label.equals("name")){
+//			return randomFrom(nameList);
+//		}
+//		if (label.equals("adjective")){
+//			return randomFrom(adjectiveList);
+//		}
+//		if (label.equals("animal")){
+//			return randomFrom(animalList);
+//		}
+//		if (label.equals("timeframe")){
+//			return randomFrom(timeList);
+//		}
+//		if (label.equals("verb")){
+//			return randomFrom(verbList);
+//		}
+//		if (label.equals("fruit")){
+//			return randomFrom(fruitList);
+//		}
+
+                // REFACTORED STATE
+                if (category.equals("number")){
+                    
+                        // collect category used
+                        if(!categoriesUsed.contains(category)) {
+                            categoriesUsed.add(category);
+                        }
+                        
 			return ""+myRandom.nextInt(50)+5;
-		}
-		
-		return "**UNKNOWN**";
+                        
+		}if(!myMap.containsKey(category)){
+                        return "**UNKNOWN**";
+                        
+                }else {
+                        // collect category used
+                        if(!categoriesUsed.contains(category)) {
+                            categoriesUsed.add(category);
+                        }
+                        
+                        return randomFrom(myMap.get(category));
+                }
+                      
 	}
 	
 	public String processWord(String w){
@@ -101,7 +135,7 @@ public class GladLib {
 		}
 		String prefix = w.substring(0,first); // text from beginning to the indicator
 		String suffix = w.substring(last+1); // from the last indicator to the end of text
-                String category = w.substring(first+1,last); // get category betweeng indicators
+                String category = w.substring(first+1,last).toLowerCase(); // get category betweeng indicators
 		String sub = getSubstitute(category); // get substitute
                 
                 // substitute must not be in occurence 
@@ -169,6 +203,30 @@ public class GladLib {
 		}
 		return list;
 	}
+        
+        public int totalWordsInMap() { 
+                int total = 0;
+                
+                for(String word : myMap.keySet()) { 
+                    total += myMap.get(word).size();
+                }
+                
+                return total;
+        }
+        
+        public int totalWordsConsidered() { 
+                int total = 0;
+                
+                for(String word : myMap.keySet()) { 
+                    for(String category : categoriesUsed) {
+                        if(category.equals(word)){
+                           total += myMap.get(word).size();
+                        }
+                    } 
+                }
+                
+                return total;
+        }
 	
 	public void makeStory(){
             wordsOccured.clear(); // clear list of words occured
@@ -177,10 +235,16 @@ public class GladLib {
 		String story = fromTemplate("com/example/myapp/data/madtemplate2.txt");
 		printOut(story, 30);
                 System.out.println("\n\nTotal number of words that were replaced: " + wordsOccured.size());
+                
+                
 	}
         
         public ArrayList<String> getOccurences() { 
             return this.wordsOccured;
+        }
+        
+        public ArrayList<String> getCategoriesUsed() {
+            return this.categoriesUsed;
         }
         
         public static void main(String [] args) {
@@ -193,7 +257,12 @@ public class GladLib {
                 System.out.println((glad.getOccurences().indexOf(words)+1) + " " + words);
             }
              
+            System.out.println("Total words: " + glad.totalWordsInMap());
             
+            System.out.println("Categories Used");
+            for(String category : glad.getCategoriesUsed()) {
+                System.out.println(category);
+            }
         }
 
 }
